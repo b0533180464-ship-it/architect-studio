@@ -1,0 +1,36 @@
+{
+    "hooks": {
+      "PostToolUse": [
+        {
+          "matcher": "Edit|Write",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/check-file.ps1"
+            }
+          ]
+        }
+      ],
+      "Stop": [
+        {
+          "matcher": "",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/check-all.ps1"
+            }
+          ]
+        }
+      ]
+    },
+    "permissions": {
+      "allow": [
+        "Bash(npm run:*)",
+        "Bash(npx prisma:*)",
+        "Bash(git:*)",
+        "Read",
+        "Edit",
+        "Write"
+      ]
+    }
+  }

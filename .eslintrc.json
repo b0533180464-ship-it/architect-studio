@@ -1,0 +1,51 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "max-lines": ["error", {
+      "max": 150,
+      "skipBlankLines": true,
+      "skipComments": true
+    }],
+    "max-lines-per-function": ["error", {
+      "max": 30,
+      "skipBlankLines": true,
+      "skipComments": true
+    }],
+    "max-depth": ["error", 3],
+    "max-nested-callbacks": ["error", 3],
+    "complexity": ["error", 10],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "prefer-const": "error",
+    "no-var": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/server/**/*.ts"],
+      "rules": {
+        "max-lines": ["error", { "max": 300 }],
+        "max-lines-per-function": ["error", { "max": 100 }]
+      }
+    },
+    {
+      "files": ["src/components/generic-table/**/*.{ts,tsx}"],
+      "rules": {
+        "max-lines": ["error", { "max": 450 }],
+        "max-lines-per-function": ["error", { "max": 280 }],
+        "complexity": ["error", 30]
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "dist/",
+    "build/"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(wmic:*)",
+      "Bash(del \"C:\\\\Users\\\\1\\\\Desktop\\\\architect-studio\\\\eslint.config.js\")",
+      "Bash(del:*)",
+      "Bash(Remove-Item \"src\\\\server\\\\routers\\\\tenant.ts\", \"src\\\\server\\\\routers\\\\user.ts\", \"src\\\\server\\\\routers\\\\onboarding.ts\")",
+      "Bash(docker:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose down:*)",
+      "Bash(findstr:*)",
+      "Bash(Get-Service -Name *postgres*)",
+      "Bash(Select-Object Name, Status)",
+      "Bash(powershell -Command:*)",
+      "Bash(psql:*)",
+      "Bash(set PGPASSWORD=postgres:*)",
+      "Bash(\"C:\\\\Program Files\\\\PostgreSQL\\\\15\\\\bin\\\\createdb.exe\" -U postgres -h localhost architect_studio)",
+      "Bash(PGPASSWORD=postgres \"C:/Program Files/PostgreSQL/15/bin/psql.exe\":*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout /t 3)",
+      "Bash(cmd /c \"rmdir /s /q node_modules\\\\.prisma\")",
+      "Bash(tasklist:*)",
+      "Bash(cmd /c \"tasklist | find /i \"\"node\"\"\")",
+      "Bash(cmd /c \"rmdir /s /q node_modules\\\\@prisma\")",
+      "Bash(timeout:*)",
+      "Bash(grep:*)",
+      "Bash(npm show:*)",
+      "Bash(node -e:*)",
+      "Bash(wc:*)",
+      "Bash(move dashboard \"\\(protected\\)\"\")",
+      "Bash(ls:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(sort:*)",
+      "Bash(npm ls:*)"
+    ]
+  }
+}
