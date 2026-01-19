@@ -12,6 +12,20 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
+function buildEmailHtml(type: 'login' | 'signup', magicLinkUrl: string): string {
+  const title = type === 'login' ? 'התחברות לחשבון' : 'ברוכים הבאים!';
+  const action = type === 'login' ? 'להתחבר לחשבון' : 'להשלים את ההרשמה';
+  const button = type === 'login' ? 'התחבר עכשיו' : 'השלם הרשמה';
+
+  return `<div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2 style="color: #333;">${title}</h2>
+    <p>לחץ על הכפתור למטה כדי ${action}:</p>
+    <a href="${magicLinkUrl}" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">${button}</a>
+    <p style="color: #666; font-size: 14px;">הקישור תקף ל-15 דקות.</p>
+    <p style="color: #999; font-size: 12px;">אם לא ביקשת קישור זה, התעלם מהמייל הזה.</p>
+  </div>`;
+}
+
 async function sendMagicLink(email: string) {
   const existingUser = await prisma.user.findFirst({
     where: { email: email.toLowerCase() },
@@ -21,28 +35,11 @@ async function sendMagicLink(email: string) {
   const token = await createMagicLinkToken(email.toLowerCase(), type);
   const magicLinkUrl = getMagicLinkUrl(token);
 
-  // Send email via Resend if configured
   if (resend) {
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Architect Studio <onboarding@resend.dev>',
-      to: email,
-      subject: type === 'login' ? 'התחברות ל-Architect Studio' : 'ברוכים הבאים ל-Architect Studio',
-      html: `
-        <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333;">${type === 'login' ? 'התחברות לחשבון' : 'ברוכים הבאים!'}</h2>
-          <p>לחץ על הכפתור למטה כדי ${type === 'login' ? 'להתחבר לחשבון' : 'להשלים את ההרשמה'}:</p>
-          <a href="${magicLinkUrl}"
-             style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px;
-                    text-decoration: none; border-radius: 6px; margin: 16px 0;">
-            ${type === 'login' ? 'התחבר עכשיו' : 'השלם הרשמה'}
-          </a>
-          <p style="color: #666; font-size: 14px;">הקישור תקף ל-15 דקות.</p>
-          <p style="color: #999; font-size: 12px;">אם לא ביקשת קישור זה, התעלם מהמייל הזה.</p>
-        </div>
-      `,
-    });
+    const subject = type === 'login' ? 'התחברות ל-Architect Studio' : 'ברוכים הבאים ל-Architect Studio';
+    const from = process.env.EMAIL_FROM || 'Architect Studio <onboarding@resend.dev>';
+    await resend.emails.send({ from, to: email, subject, html: buildEmailHtml(type, magicLinkUrl) });
   } else {
-    // In development without Resend, log the link
     // eslint-disable-next-line no-console
     console.log(`\n[Magic Link] ${email} (${type}): ${magicLinkUrl}\n`);
   }
