@@ -4,8 +4,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 import { prisma } from '@/lib/prisma';
 import { createMagicLinkToken, getMagicLinkUrl } from '@/lib/auth';
+
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 async function sendMagicLink(email: string) {
   const existingUser = await prisma.user.findFirst({
@@ -16,13 +21,32 @@ async function sendMagicLink(email: string) {
   const token = await createMagicLinkToken(email.toLowerCase(), type);
   const magicLinkUrl = getMagicLinkUrl(token);
 
-  // In development, log the link (no email service)
-  if (!process.env.RESEND_API_KEY) {
+  // Send email via Resend if configured
+  if (resend) {
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'Architect Studio <onboarding@resend.dev>',
+      to: email,
+      subject: type === 'login' ? 'התחברות ל-Architect Studio' : 'ברוכים הבאים ל-Architect Studio',
+      html: `
+        <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">${type === 'login' ? 'התחברות לחשבון' : 'ברוכים הבאים!'}</h2>
+          <p>לחץ על הכפתור למטה כדי ${type === 'login' ? 'להתחבר לחשבון' : 'להשלים את ההרשמה'}:</p>
+          <a href="${magicLinkUrl}"
+             style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px;
+                    text-decoration: none; border-radius: 6px; margin: 16px 0;">
+            ${type === 'login' ? 'התחבר עכשיו' : 'השלם הרשמה'}
+          </a>
+          <p style="color: #666; font-size: 14px;">הקישור תקף ל-15 דקות.</p>
+          <p style="color: #999; font-size: 12px;">אם לא ביקשת קישור זה, התעלם מהמייל הזה.</p>
+        </div>
+      `,
+    });
+  } else {
+    // In development without Resend, log the link
     // eslint-disable-next-line no-console
     console.log(`\n[Magic Link] ${email} (${type}): ${magicLinkUrl}\n`);
   }
 
-  // TODO: Send email via Resend when API key is configured
   return { magicLinkUrl, type };
 }
 
